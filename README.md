@@ -36,3 +36,7 @@ Four benchmark graphs are supported out of the box: `cora`, `ogbn-arxiv`,
 [docs/MillenniumDB.wiki/Setup-GNN.md](docs/MillenniumDB.wiki/Setup-GNN.md) for the
 build and [docs/MillenniumDB.wiki/Creating-and-running-a-GNN-database.md](docs/MillenniumDB.wiki/Creating-and-running-a-GNN-database.md)
 for the pipeline.
+
+To reproduce the ogbn-papers100M results of the AMW 2026 paper with the exact code it was measured on, see
+[docs/MillenniumDB.wiki/Reproducing-AMW-2026.md](docs/MillenniumDB.wiki/Reproducing-AMW-2026.md): it builds the source of the `amw2026` release
+and lists every query of the run, in order, with the results to expect.
