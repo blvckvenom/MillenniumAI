@@ -141,8 +141,15 @@ on the GPU over an undirected copy of the graph's topology; on a fresh projectio
 disk (about 8 minutes on the machine above) and then samples.
 
 In this commit the list `[20,15,10]` is read from the seed outwards: 20 neighbours in the first hop, 15 in the second
-and 10 in the third. In the order used by DGL and DiskGNN, the same configuration is written `[10,15,20]`. The code on
-`main` uses the DGL order since 6 July 2026.
+and 10 in the third. In the order used by DGL and DiskGNN, the same configuration is written `[10,15,20]`, and that is
+how Listing 2 of the paper writes it. The code on `main` uses the DGL order since 6 July 2026. With the code of this
+release, write `[20,15,10]`: copying `[10,15,20]` from the paper into this commit samples the other configuration,
+not the one behind the published accuracy.
+
+The call below has the options of Listing 2 of the paper. The runs behind the paper also passed
+`useFourLevelTopologyStore`, `useAdjacencyCache` and `useL3MmapSidecar` set to `true`, which are their default values,
+and `l1CacheMb: 512` and `l2CacheMb: 6144`, which only size the topology cache of the CPU sampler; on this machine the
+graph is sampled on the GPU.
 
 ```sql
 CALL gnn_offline_sample(
@@ -150,26 +157,14 @@ CALL gnn_offline_sample(
     'brazo_muestra',
     [20,15,10],
     {
-        randomSeed: 42,
         batchSize: 1024,
         orientation: 'UNDIRECTED',
         usePredefinedSplits: true,
-        useFourLevelTopologyStore: true,
-        useAdjacencyCache: true,
-        useL3MmapSidecar: true,
-        l1CacheMb: 512,
-        l2CacheMb: 6144,
-        numWorkers: 16,
-        force: true
+        randomSeed: 42,
+        numWorkers: 16
     }
 )
-YIELD
-    sampleName, projectionName, totalBatches, trainBatches, validationBatches, testBatches,
-    uniqueNodes, storagePath, computeMillis, phase0Triggered, phase0Succeeded, phase0WalksDone,
-    phase0LookupsDone, phase0Millis, numWorkersUsed, sampleContentFp, samplingBackend,
-    samplingDirections, samplingPlanReason, symmetricUsed, symmetricBuiltOk, symmetricMs,
-    symmetricRamBytes, directionalRamFreedBytes, rssPeakBeforeFreeBytes, rssPeakAfterFreeBytes,
-    rssCurrentEndBytes
+YIELD totalBatches, uniqueNodes, sampleContentFp
 RETURN *
 ```
 
